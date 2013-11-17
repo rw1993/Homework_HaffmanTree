@@ -106,17 +106,17 @@ void gethtcode(int n,htcode*hc,htnode*ht)
 {
    for(int i=0;i<n;i++)
    {
-	  /* htnode tmp;
+	   htnode tmp;
 	   tmp=ht[i];
 	   hc[i].len=0;
+	   hc[i].c=tmp.c;
 	   while(tmp.parent!=-1)
 	   {
-		   hc[i].c=tmp.c;
-		   hc[i].bits[i]=tmp.tag;
+		   int len=hc[i].len;
+		   hc[i].bits[len]=tmp.tag;
 		   hc[i].len++;
 		   tmp=ht[tmp.parent];
-           }*/
-	  // printf("%d,%d,%c\n",i,ht[i].parent,ht[i].c);
+           }
    }
   
 };
@@ -136,19 +136,19 @@ int main()//main fanction,read the files,use other function
   char*c=(char*)malloc(file_size*sizeof(char));
   int len=getCW(tmp,c,weight);//get char and weight
   // printf("%d\n",len);
-  /* for(int i=0;i<len;i++)
+  /*  for(int i=0;i<len;i++)
  {
       printf("%c\n",c[i]);
  }*/
   int m=2*len-1;
   htnode*ht=(htnode*)malloc(m*sizeof(htnode));//begin to build the tree
   creatHT(m,len,c,weight,ht);//creat the tree
-  //printf("%d\n",ht[m-1].parent);
+ // printf("%d\n",ht[0].c);
   htcode*hc=(htcode*)malloc(len*sizeof(htcode));//get diy_acssi
   gethtcode(len,hc,ht);//getthecode
-  for(int i=0;i<m;i++)
+  for(int i=0;i<len;i++)
   {
-	  printf("%d,%d,%d,%d\n",i,ht[i].parent,ht[i].tag,ht[i].weight);
+	  printf("%s,%d\n",hc[i].bits,hc[i].c);
   }
 return 0;
 }
