@@ -76,27 +76,27 @@ void creatHT(int m,int len,char*c,int*w,htnode*ht)
 };
 int getCW(char*tmp,char*c,int* weight)
 {
-int len=0;
-int i=0;
+  int len=0;
+  int i=0;
    // printf("%d\n",len);
-for( i=0;i<strlen(tmp);i++)
+  for( i=0;i<strlen(tmp);i++)
 {
-int  ifnew=1;
-int j=0;
+  int  ifnew=1;
+  int j=0;
 for(j=0;j<len;j++)
 { 
-if(tmp[i]==c[j])
+  if(tmp[i]==c[j])
 {
-ifnew=0;
-weight[j]++;
-break;
+  ifnew=0;
+  weight[j]++;
+  break;
 }
 }
 if(ifnew)
 {
-c[len]=tmp[i];
-weight[len]=1;
-len++;
+  c[len]=tmp[i];
+  weight[len]=1;
+  len++;
 }
 }
 
@@ -131,6 +131,18 @@ void gethtcode(int n,htcode*hc,htnode*ht)
    }
   
 };
+ void ChangeToHccode(char*tmp,char*tmp2,htcode*hc,int len)
+{
+	int newlen=0;
+      for(int i=0;i<strlen(tmp);i++)
+      {
+	      for(int j=0;j<len;j++)
+	      {
+		      if(tmp[i]==hc[j].c)     
+                       strcat(tmp2,hc[j].bits);
+              }
+      } 
+};
 int main()//main fanction,read the files,use other function
 {
   FILE*f;
@@ -163,11 +175,14 @@ int main()//main fanction,read the files,use other function
   }
   //change the char tmp
   int maxlen=hc[0].len;
-  for(i=0;i<len;i++)
+  for(int i=0;i<len;i++)
   {
 	  if(hc[i].len>maxlen)
 		  maxlen=hc[i].len;
 
   }
-return 0;
+  char*tmp2=(char*)malloc(maxlen*file_size*sizeof(char));
+  ChangeToHccode(tmp,tmp2,hc,len);
+  printf("%s\n",tmp2);
+  return 0;
 }
