@@ -143,6 +143,44 @@ void gethtcode(int n,htcode*hc,htnode*ht)
               }
       } 
 };
+  void Translate(char*tmp2,char*tmp3,htcode*hc,int len)
+{
+	int maxlen;
+   for(int i=0;i<len;i++)
+  {
+	  if(hc[i].len>maxlen)
+		  maxlen=hc[i].len;
+
+  }
+   int tmp3len=0;
+   char*tmpbits=(char*)malloc(maxlen*sizeof(char));
+	   int tblen=0;
+   for(int i=0;i<strlen(tmp2);i++)
+   {
+	   int tag=0;
+	   tmpbits[tblen]=tmp2[i];
+	   for(int j=0;j<len;j++)
+	   {
+		   if(strcmp(hc[j].bits,tmpbits)==0)
+		   {
+                       tmp3[tmp3len]=hc[j].c;
+		       tmp3len++;
+		       tag=1;
+		       break;
+                   }
+	   }
+	   if(tag)
+	   {
+		   memset(tmpbits,0.,sizeof(tmpbits));
+		   tblen=0;
+	   }
+	   else
+	   {
+		   tblen++;
+	   }
+
+   }
+};
 int main()//main fanction,read the files,use other function
 {
   FILE*f;
@@ -184,5 +222,9 @@ int main()//main fanction,read the files,use other function
   char*tmp2=(char*)malloc(maxlen*file_size*sizeof(char));
   ChangeToHccode(tmp,tmp2,hc,len);
   printf("%s\n",tmp2);
+  char*tmp3=(char*)malloc(maxlen*strlen(tmp2)*sizeof(char));
+  Translate(tmp2,tmp3,hc,len);
+  printf("%s\n",tmp3);
   return 0;
+
 }
