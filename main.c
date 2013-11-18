@@ -58,7 +58,7 @@ void SelectMin(htnode*ht,int n,int &p1,int &p2)
 	}
 	for(int j=0;j<n;j++)
 	{
-		if((ht[j].weight<ht[p1].weight)&&(ht[j].parent==-1)) p2=j;
+		if((ht[j].weight<ht[p2].weight)&&(ht[j].parent==-1)) p2=j;
 	}
 	ht[p2].parent=n;
 	ht[p2].tag='1';
@@ -95,7 +95,7 @@ break;
 if(ifnew)
 {
 c[len]=tmp[i];
-weight[len]=0;
+weight[len]=1;
 len++;
 }
 }
@@ -117,6 +117,17 @@ void gethtcode(int n,htcode*hc,htnode*ht)
 		   hc[i].len++;
 		   tmp=ht[tmp.parent];
            }
+	 //  printf("%s\n",hc[i].bits);
+	 //  printf("%d\n",hc[i].len);
+	   char tmpc;
+	   int len=hc[i].len;
+	   for(int j=0;j<len/2;j++)
+	   {
+		   tmpc=hc[i].bits[j];
+		   hc[i].bits[j]=hc[i].bits[len-j-1];
+		   hc[i].bits[len-j-1]=tmpc;
+	   }
+	 //  printf("%s\n",hc[i].bits);
    }
   
 };
@@ -148,7 +159,15 @@ int main()//main fanction,read the files,use other function
   gethtcode(len,hc,ht);//getthecode
   for(int i=0;i<len;i++)
   {
-	  printf("%s,%d\n",hc[i].bits,hc[i].c);
+	  printf("%d,%s\n",hc[i].c,hc[i].bits);
+  }
+  //change the char tmp
+  int maxlen=hc[0].len;
+  for(i=0;i<len;i++)
+  {
+	  if(hc[i].len>maxlen)
+		  maxlen=hc[i].len;
+
   }
 return 0;
 }
