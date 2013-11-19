@@ -137,19 +137,24 @@ char char_to_bits(char*buff)//将长度为8到字符串变为二进制位
 {
 	int i;
 	char bits=0;
-	bits|=buff[0];
-	for(i=1;i<8;i++)
+//	printf("buff=%s\n",buff);
+	int sum=(buff[1]-48)*64+(buff[2]-48)*32+(buff[3]-48)*16+(buff[4]-48)*8+(buff[5]-48)*4+(buff[6]-48)*2+buff[7]-48;
+        if(buff[0]-48)
 	{
-		bits<<=1;
-		bits|=buff[i];
+		bits=-sum;
 	}
+	else bits=sum;
+
+
+
+//	printf("bits=%d\n",bits);
 	return bits;
 
 };
 
  void ChangeToHccode(char*tmp,char*tmp2,htcode*hc,int len)
 {
-	int newlen=0;
+
 	char buff[8];
 	int bufflen=0;
       for(int i=0;i<strlen(tmp);i++)
@@ -165,6 +170,7 @@ char char_to_bits(char*buff)//将长度为8到字符串变为二进制位
 					      tmp2[strlen(tmp2)]=char_to_bits(buff);
 					      memset(buff,0,sizeof(buff));
 					      bufflen=0;
+		
 				      }
 				      buff[bufflen]=hc[j].bits[l];
 				      bufflen++;
@@ -173,11 +179,33 @@ char char_to_bits(char*buff)//将长度为8到字符串变为二进制位
 		      }
               }
       }
+      for(int i=0;i<len;i++)//添加结束标志，此处有问题
+  {
+	  if(hc[i].c==27)
+	  {
+		  for(int l=0;l<hc[i].len;l++)
+		  {
+			   if(bufflen==8)
+				      {
+					      tmp2[strlen(tmp2)]=char_to_bits(buff);
+					      memset(buff,0,sizeof(buff));
+					      bufflen=0;
+	
+				      }
+				      buff[bufflen]=hc[i].bits[l];
+				      bufflen++;
+				      
+
+		  }
+		  endtag=i;
+          }
+ }
+
      if(bufflen<8)
      {
 	     for(int i=bufflen;i<8;i++)
 	     {
-		     buff[i]=0;
+		     buff[i]='0';
 	     }
 	     tmp2[strlen(tmp2)]=char_to_bits(buff);
      } 
@@ -229,12 +257,15 @@ char char_to_bits(char*buff)//将长度为8到字符串变为二进制位
 };
 void bits_to_char(char*tmp,char a)
 {
+       //	printf("%c\n",a);
 	for(int i=0;i<8;i++)
 	{
 		tmp[i]='0';
 	}
-	int len;
-	for(int i=a;a;a/2)
+	int len=0;
+	int value=(int)a;
+      // printf("%d\n",a);
+	for(int i=a;a!=0;a=a/2)
 	{
 		if(a%2==1)
 		{
@@ -260,19 +291,19 @@ int main()//main fanction,read the files,use other function
   fseek(f,0,SEEK_SET);
   tmp=(char*)malloc(file_size*sizeof(char));
   fread(tmp,file_size,sizeof(char),f);
-  fclose(f);
-  //printf("%s\n",tmp);
+ // printf("tmp=%s\n",tmp);
   int*weight=(int*)malloc(file_size*sizeof(int));
   char*c=(char*)malloc(file_size*sizeof(char));
   int len=getCW(tmp,c,weight);//get char and weight
   c[len]=27;
-  len++;
+  weight[len]=1;
+  len++;//留出一位作结束位
   // printf("%d\n",len);
   /*  for(int i=0;i<len;i++)
  {
       printf("%c\n",c[i]);
  }*/
-  int m=2*len-1;//留出一位作为停止标志
+  int m=2*len-1;
   htnode*ht=(htnode*)malloc(m*sizeof(htnode));//begin to build the tree
   creatHT(m,len,c,weight,ht);//creat the tree
  // printf("%d\n",ht[0].c);
@@ -282,7 +313,6 @@ int main()//main fanction,read the files,use other function
   {
 	  printf("%d,%s\n",hc[i].c,hc[i].bits);
   }
-  //change the char tmp
   int maxlen=hc[0].len;
   for(int i=0;i<len;i++)
   {
@@ -292,35 +322,33 @@ int main()//main fanction,read the files,use other function
   }
   char*tmp2=(char*)malloc(maxlen*file_size*sizeof(char));
   ChangeToHccode(tmp,tmp2,hc,len);//转化为ascii编码并且储存,可能有问题
-  for(int i=0;i<len;i++)//添加结束标志，此处有问题
+/* for(int i=0;i<strlen(tmp2);i++)
   {
-	  if(hc[i].c==27)
-	  {
-		  strcat(tmp2,hc[i].bits);
-		  endtag=i;
-          }
- }
-  printf("%s\n",tmp2);
-    FILE*f1;
+	  printf("%d\n",tmp2[i]);
+  } */
+  FILE*f1;
   if((f1=fopen("test2.txt","a+"))==NULL)
   {
 	  printf("error!");
 	  exit(0);
   }
   fputs(tmp2,f1);
+  fputs("\n",f1);
   fclose(f1);
-  char*tmp3=(char*)malloc(8*maxlen*strlen(tmp2)*sizeof(char));//实现译码
+  char* tmp3=(char*)malloc(8*maxlen*strlen(tmp2)*sizeof(char));
+  memset(tmp3,0,sizeof(tmp3));
   int len3=0;
   for(int i=0;i<strlen(tmp2);i++)
   {
 	char tmpbits[8];
-        bits_to_char(tmpbits,tmp2[i]);
+	memset(tmpbits,0,sizeof(tmpbits));
+       bits_to_char(tmpbits,tmp2[i]);
 	  strcat(tmp3,tmpbits);
   }
-  printf("%s\n",tmp3);
-  //char*tmp4=(char*)malloc(strlen(tmp3)*sizeof(char));
-// Translate(tmp3,tmp4,hc,len);
-//  printf("%s\n",tmp4);
+// printf("%s\n",tmp3);
+ char*tmp4=(char*)malloc(maxlen*file_size*sizeof(char));
+ Translate(tmp3,tmp4,hc,len);
+  printf("%s\n",tmp4);
   return 0;
 
 }
