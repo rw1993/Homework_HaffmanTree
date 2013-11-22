@@ -210,58 +210,54 @@ char char_to_bits(char*buff)//将长度为8到字符串变为二进制位
          tmp2[strlen(tmp2)]=char_to_bits(buff);
      }
 };
-  void Translate(char*tmp2,char*tmp3,htcode*hc,int len)
+  void Translate(char*tmp3,htcode*hc,int len)//翻译时一直出现问题。。。解决得很水
 {
-    int maxlen;
-   for(int i=0;i<len;i++)
-  {
-      if(hc[i].len>maxlen)
-          maxlen=hc[i].len;
-
-  }
-   int tmp3len=0;
-   char*tmpbits=(char*)malloc(maxlen*sizeof(char));
-           memset(tmpbits,0.,sizeof(tmpbits));
-       int tblen=0;
-int ifend=0;
-  printf("%s\n",hc[endtag].bits);
-   for(int i=0;i<strlen(tmp2);i++)
-   {
-       int tag=0;
-       tmpbits[tblen]=tmp2[i];
-       for(int j=0;j<len;j++)
-       {
-           if(strcmp(tmpbits,hc[endtag].bits)==0)
-                         {
-                 ifend=1;
-                  printf("end!\n");
-                 break;
-             }
-                  
-
-          if(strcmp(hc[j].bits,tmpbits)==0)
-           {
-                       tmp3[tmp3len]=hc[j].c;
-               tmp3len++;
-               tag=1;
-	       printf("%s\n",tmp3);
-               break;
-                   }
-       }
-           if(ifend) break;
-       if(tag)
-       {
-           memset(tmpbits,0.,sizeof(tmpbits));
-           tblen=0;
-       }
-       else
-       {
-           tblen++;
-       }
-
-   }
-                   
-};
+    int len_of_t4=0;
+    int len_of_t3=strlen(tmp3);
+   // printf("%d\n",len_of_t3);
+    char tmpbits[MAX];
+    int len_of_tb=0;
+    int ifend=0;
+    char*tmp5=(char*)malloc(len_of_t3*sizeof(char));
+    memset(tmpbits,0,sizeof(tmpbits));
+    for(int i=0;i<len_of_t3;i++)
+    {
+        tmpbits[len_of_tb]=tmp3[i];
+	len_of_tb++;
+	for(int j=0;j<len;j++)
+	{
+		if(strcmp(hc[j].bits,tmpbits)==0)
+		{
+			if(j==endtag)
+			{
+				ifend=1;
+//				printf("%s\n",tmp5);
+				 FILE*f2;
+                if((f2=fopen("test3.txt","a+"))==NULL)
+            {
+                printf("error!");
+                exit(0);
+            }
+           fputs(tmp5,f2);
+           fputs("\n",f2);
+           fclose(f2);
+		   break;
+			}
+			else
+			{
+//			       printf("%s\n",hc[j].bits);
+                               tmp5[len_of_t4]=hc[j].c;
+                               len_of_t4++;
+			       len_of_tb=0;
+                               memset(tmpbits,0,sizeof(tmpbits));
+			       break;
+			       
+			}
+		}
+	}
+		if(ifend) break;
+    }
+    };
 void bits_to_char(char*tmp,char a)
 {
        //    printf("%c\n",a);
@@ -324,10 +320,10 @@ int main()//main fanction,read the files,use other function
  // printf("%d\n",ht[0].c);
   htcode*hc=(htcode*)malloc((len+1)*sizeof(htcode));//get diy_acssi
   gethtcode(len,hc,ht);//getthecode
-  for(int i=0;i<len;i++)
+ /* for(int i=0;i<len;i++)
   {
       printf("%d,%s\n",hc[i].c,hc[i].bits);
-  }
+  }*/
   int maxlen=hc[0].len;
   for(int i=0;i<len;i++)
   {
@@ -355,22 +351,17 @@ int main()//main fanction,read the files,use other function
   int len3=0;
   for(int i=0;i<strlen(tmp2);i++)
   {
-     printf("%d\n",tmp2[i]);
+    // printf("%d\n",tmp2[i]);
     char tmpbits[8];
     memset(tmpbits,0,sizeof(tmpbits));
        bits_to_char(tmpbits,tmp2[i]);
-         printf("%s\n",tmpbits);
+      //   printf("%s\n",tmpbits);
       strcat(tmp3,tmpbits);
   }
- printf("%s\n",tmp3);
+// printf("%s\n",tmp3);
  char*tmp4=(char*)malloc(maxlen*file_size*sizeof(char));
            memset(tmp4,0.,sizeof(tmp4));
- Translate(tmp3,tmp4,hc,len);
-
- printf("%s\n",tmp4);
-
-
-
-  return 0;
+ Translate(tmp3,hc,len);
+ return 0;
 
 }
