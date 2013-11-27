@@ -1,5 +1,6 @@
 #ifndef BTREE_H_INCLUDED
 #define BTREE_H_INCLUDED
+#include "LinkedQueue.h"
 using namespace std;
 template<typename T>
 struct node
@@ -114,12 +115,35 @@ public:
         }
 
     };
-    int Count(node<T>*n)
+    void inorder_the_tree()
     {
+        inorder(root);
+    };
+    void leverorder(node<T>*n)
+    {
+        node<T>*tmp;
+        LinkedQueue<node<T>*>*s=new LinkedQueue<node<T>*>;     
+         s->EnQueue(n);
+             while(!s->IsEmpty())
+             {
+              s->DeQueue(tmp);
+              cout<<tmp->data<<endl;
+              if(tmp->leftchild)
+              s->EnQueue(tmp->leftchild);
+              if(tmp->rightchild)
+              s->EnQueue(tmp->rightchild);
+         }
+};
+    void leverorder_the_tree()
+    {
+          leverorder(root);
+    };
+    int Count(node<T>*n)
+  {
         if(n==NULL) return 0;
         else return 1+Count(n->leftchild)+Count(n->rightchild);
     };
-    int Count_thi_tree()
+    int Count_this_tree()
     {
       return Count(root);
     };
